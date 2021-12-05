@@ -49,11 +49,11 @@ func NewProvider(config *providerConfig) *Provider {
 	return &Provider{config: config, cliSettings: cli.New()}
 }
 
-func (p *Provider) ID() string {
+func (p Provider) ID() string {
 	return ProviderID
 }
 
-func (p *Provider) getActionConfiguration(namespace string) (*action.Configuration, error) {
+func (p Provider) getActionConfiguration(namespace string) (*action.Configuration, error) {
 	actionConfig := new(action.Configuration)
 
 	overrides := &clientcmd.ConfigOverrides{}

@@ -16,8 +16,18 @@ type DBConfig struct {
 	Name string `mapstructure:"name" default:"entropy"`
 }
 
+type DB struct {
+	db *mongo.Database
+}
+
+func (d *DB) GetCollection(name string) *Collection {
+	return &Collection{
+		collection: d.db.Collection(name),
+	}
+}
+
 // New returns the database instance
-func New(config *DBConfig) (*mongo.Database, error) {
+func New(config *DBConfig) (*DB, error) {
 	uri := fmt.Sprintf(
 		"mongodb://%s:%s/%s",
 		config.Host,
@@ -25,15 +35,17 @@ func New(config *DBConfig) (*mongo.Database, error) {
 		config.Name,
 	)
 
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
 	}
 
-	pingCtx, pingCancel := context.WithTimeout(context.Background(), time.Second*5)
+	pingCtx, pingCancel := context.WithTimeout(context.TODO(), time.Second*5)
 	defer pingCancel()
 
 	err = client.Ping(pingCtx, nil)
 
-	return client.Database(config.Name), err
+	return &DB{
+		db: client.Database(config.Name),
+	}, err
 }

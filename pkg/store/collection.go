@@ -27,12 +27,16 @@ func (c *Collection) InsertOne(document interface{}) error {
 	return nil
 }
 
-func (c *Collection) UpdateByURN(urn string, document interface{}) error {
-	_, err := c.collection.UpdateOne(context.TODO(),
-		map[string]interface{}{"urn": urn},
+func (c *Collection) UpdateOne(filter interface{}, document interface{}) error {
+	singleResult := c.collection.FindOneAndUpdate(context.TODO(),
+		filter,
 		map[string]interface{}{"$set": document},
 	)
+	err := singleResult.Err()
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return fmt.Errorf("%w: filter = %s", NotFoundError, filter)
+		}
 		return fmt.Errorf("%w: %s", UpdateFailedError, err)
 	}
 	return nil

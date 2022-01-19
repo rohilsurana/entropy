@@ -3,8 +3,8 @@ package firehose
 import (
 	"strings"
 
-	"github.com/odpf/entropy/domain/resource"
 	"github.com/odpf/entropy/domain/model"
+	"github.com/odpf/entropy/domain/resource"
 )
 
 type Firehose struct {
@@ -17,18 +17,13 @@ func (t Firehose) ID() string {
 	return ModuleID
 }
 
-func (t Firehose) Create(name string, parent string, configs map[string]interface{}) (*model.Resource, error) {
+func (t Firehose) Sync(name string, parent string, configs map[string]interface{}) (*model.Resource, error) {
 	res := &model.Resource{}
 	res.Name = name
 	res.URN = strings.Join([]string{parent, name, ModuleID}, "-")
 	res.Parent = parent
 	res.Kind = ModuleID
 	res.Configs = configs
-
-	// validate configs
-
-	// get providers from coreservices like - t.core.providerRepo.GetProvider(type, urn)
-
 	return t.RC.Create(res)
 }
 
@@ -38,7 +33,7 @@ func (t Firehose) Update(urn string, configs map[string]interface{}) (*model.Res
 		return nil, err
 	}
 
-	res.Configs = configs
+	res.Configs = configs // take care of merging new configs into old configs
 	return t.RC.Update(res)
 }
 

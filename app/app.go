@@ -3,8 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/odpf/entropy/pkg/module"
 	"github.com/odpf/entropy/pkg/resource"
 	"github.com/odpf/entropy/store"
+	"github.com/odpf/entropy/store/inmemory"
 	"github.com/odpf/entropy/store/mongodb"
 	"net/http"
 	"time"
@@ -68,7 +70,10 @@ func RunServer(c *Config) error {
 		mongoStore.Collection(store.ResourceRepositoryName),
 	)
 
+	moduleRepository := inmemory.NewModuleRepository()
+
 	resourceService := resource.NewService(resourceRepository)
+	moduleService := module.NewService(resourceRepository, moduleRepository)
 
 	muxServer, err := server.NewMux(server.Config{
 		Port: c.Service.Port,
@@ -107,7 +112,7 @@ func RunServer(c *Config) error {
 	)
 	muxServer.RegisterService(
 		&entropyv1beta1.ResourceService_ServiceDesc,
-		handlersv1.NewApiServer(resourceService),
+		handlersv1.NewApiServer(resourceService, moduleService),
 	)
 
 	muxServer.RegisterHandler("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

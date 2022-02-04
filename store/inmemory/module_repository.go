@@ -10,19 +10,21 @@ type ModuleRepository struct {
 }
 
 func NewModuleRepository() *ModuleRepository {
-	return &ModuleRepository{}
+	return &ModuleRepository{
+		collection: map[string]domain.Module{},
+	}
 }
 
-func (mr *ModuleRepository) Register(urn string, module domain.Module) error {
-	if _, exists := mr.collection[urn]; exists {
+func (mr *ModuleRepository) Register(module domain.Module) error {
+	if _, exists := mr.collection[module.ID()]; exists {
 		return store.ModuleAlreadyExistsError
 	}
-	mr.collection[urn] = module
+	mr.collection[module.ID()] = module
 	return nil
 }
 
-func (mr *ModuleRepository) Get(urn string) (domain.Module, error) {
-	if module, exists := mr.collection[urn]; exists {
+func (mr *ModuleRepository) Get(id string) (domain.Module, error) {
+	if module, exists := mr.collection[id]; exists {
 		return module, nil
 	}
 	return nil, store.ModuleNotFoundError

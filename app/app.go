@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/odpf/entropy/modules/log"
 	"github.com/odpf/entropy/pkg/module"
 	"github.com/odpf/entropy/pkg/resource"
 	"github.com/odpf/entropy/store"
@@ -71,6 +72,10 @@ func RunServer(c *Config) error {
 	)
 
 	moduleRepository := inmemory.NewModuleRepository()
+	err = moduleRepository.Register(&log.Module{})
+	if err != nil {
+		return err
+	}
 
 	resourceService := resource.NewService(resourceRepository)
 	moduleService := module.NewService(resourceRepository, moduleRepository)

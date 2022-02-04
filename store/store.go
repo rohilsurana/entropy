@@ -23,6 +23,6 @@ type ResourceRepository interface {
 }
 
 type ModuleRepository interface {
-	Register(urn string, module domain.Module) error
-	Get(urn string) (domain.Module, error)
+	Register(module domain.Module) error
+	Get(id string) (domain.Module, error)
 }

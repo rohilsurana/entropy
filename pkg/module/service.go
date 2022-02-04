@@ -30,15 +30,20 @@ func (s *Service) TriggerSync(ctx context.Context, urn string) error {
 
 	module, err := s.moduleRepository.Get(r.Kind)
 	if err != nil {
+		r.Status = domain.ResourceStatusError
+		updateErr := s.resourceRepository.Update(r)
+		if updateErr != nil {
+			return updateErr
+		}
 		return err
 	}
 
 	status, err := module.Apply(r)
 	if err != nil {
-		r.Status = domain.ResourceStatusPending
-		err := s.resourceRepository.Update(r)
-		if err != nil {
-			return err
+		r.Status = domain.ResourceStatusError
+		updateErr := s.resourceRepository.Update(r)
+		if updateErr != nil {
+			return updateErr
 		}
 		return err
 	}

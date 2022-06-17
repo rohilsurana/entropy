@@ -62,9 +62,9 @@ dockers:
       - entropy
     dockerfile: Dockerfile
     image_templates:
-      - 'docker.io/odpf/{{.ProjectName}}:latest'
-      - 'docker.io/odpf/{{.ProjectName}}:{{ .Version }}'
-      - 'docker.io/odpf/{{.ProjectName}}:{{ .Version }}-amd64'
+      - 'docker.io/rohilsurana/{{.ProjectName}}:latest'
+      - 'docker.io/rohilsurana/{{.ProjectName}}:{{ .Version }}'
+      - 'docker.io/rohilsurana/{{.ProjectName}}:{{ .Version }}-amd64'
 
 brews:
   - name: entropy
